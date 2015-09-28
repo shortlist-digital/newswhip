@@ -26,179 +26,6 @@ class NewsWhip {
 	protected $_baseUri = 'https://api.newswhip.com/v1/';
 
 	/**
-	 * @var array $_postFilterFields fields that can be used for filtering post requests
-	 */
-	protected $_postFilterFields = [
-		'headline' => ['label' => 'Headline'],
-		'summary' => ['label' => 'Summary'],
-		'authors' => ['label' => 'Authors'],
-		'country_code' => ['label' => 'Country Code'],
-		'region_code' => ['label' => 'Region Code'],
-		'language' => ['label' => 'Language'],
-		'categories' => ['label' => 'Categories'],
-		'publisher' => ['label' => 'Publisher'],
-		'domain' => ['label' => 'Domain'],
-		'href' => ['label' => 'Link']
-	];
-
-	/**
-	 * @var array $_postArticlesParams array of valid article parameters
-	 *      Options:
-	 *      - (*) filters (array[string]):
-	 *                  List of Lucene QueryString filters to be applied to the articles. See available fields for filtering below.
-	 *      - from (int - Unix timestamp in milliseconds) (default: -1 week):
-	 *                  Filters articles published after {from}.
-	 *      - to (int - Unix timestamp in milliseconds) (default: Now):
-	 *                  Filters articles published before {to}.
-	 *      - language (string - Two letter ISO 639-1 language code) (default: Any)
-	 *      - sort_by (string) (default: default):
-	 *                  One of the following: default, fb_likes, fb_shares, fb_comments, fb_total, twitter, linkedin,
-	 *                  fb_tw_and_li, nw_score, nw_max_score, created_at.
-	 *      - video_only (boolean) (default: false)
-	 *      - default_field (string) (default: Relevant fields):
-	 *                  Field to be used when filtering by keywords and no fields are used in the query string.
-	 *      - size (int):
-	 *                  Max number of articles to be returned (includes related stories.)
-	 *      - find_related (boolean) (default: true)
-	 *                  Related stories will be collapsed when set.
-	 */
-	protected $_postArticlesParams = [
-		'filters' => [
-			'type' => [
-				'string',
-				'array'
-			],
-			'required' => true
-		],
-		'from' => [
-			'type' => 'timestamp'
-		],
-		'to' => [
-			'type' => 'timestamp'
-		],
-		'language' => [
-			'type' => 'string'
-		],
-		'sort_by' => [
-			'type' => 'string',
-			'options' => [
-				'default' => ['label' => 'Default'],
-				'fb_likes' => ['label' => 'Facebook Likes'],
-				'fb_shares' => ['label' => 'Facebook Shares'],
-				'fb_comments' => ['label' => 'Facebook Comments'],
-				'fb_total' => ['label' => 'Facebook Overall'],
-				'twitter' => ['label' => 'Twitter'],
-				'linkedin' => ['label' => 'LinkedIn'],
-				'fb_tw_and_li' => ['label' => 'Facebook, Twitter and LinkedIn'],
-				'nw_score' => ['label' => 'Score'],
-				'nw_max_score' => ['label' => 'Max Score'],
-				'created_at' => ['label' => 'Created']
-			]
-		],
-		'video_only' => [
-			'type' => 'boolean'
-		],
-		'default_field' => [
-			'type' => 'string'
-		],
-		'size' => [
-			'type' => 'int'
-		],
-		'find_related' => [
-			'type' => 'boolean'
-		]
-	];
-
-	/**
-	 * @var array $_postStatsParams array of valid stat parameters
-	 *      Options:
-	 *      - (*) filters (array[string]):
-	 *                  List of Lucene QueryString filters to be applied to the articles. See available fields for filtering below.
-	 *      - (*) sort_by (string - {aggregation_name}.{stat_value}):
-	 *                  {aggregation_name} is one of fb_likes, fb_shares, fb_comments, fb_total, twitter, linkedin, pinterest and
-	 *                  {stat_value} is one of count, min, max, avg, sum, sum_of_squares, variance, std_dev.
-	 *      - (*) aggregate_by (string):
-	 *                  Groups all matched stories by any of the following: publisher, domains, domain, language, authors,
-	 *                  country, categories
-	 *      - from (int - Unix timestamp in milliseconds) (default: -1 week):
-	 *                  Filters articles published after {from}.
-	 *      - to (int - Unix timestamp in milliseconds) (default: Now):
-	 *                  Filters articles published before {to}.
-	 *      - language (string - Two letter ISO 639-1 language code) (default: Any)
-	 *      - video_only (boolean) (default: false)
-	 *      - default_field (string) (default: Relevant fields):
-	 *                  Field to be used when filtering by keywords and no fields are used in the query string.
-	 *      - size (int):
-	 *                  Max number of aggregations to be returned.
-	 *
-	 *      (*) denotes required
-	 */
-	protected $_postStatsParams = [
-		'filters' => [
-			'type' => [
-				'string',
-				'array'
-			],
-			'required' => true
-		],
-		'from' => [
-			'type' => 'timestamp'
-		],
-		'to' => [
-			'type' => 'timestamp'
-		],
-		'language' => [
-			'type' => 'string'
-		],
-		'sort_by' => [
-			'type' => 'string',
-			'required' => true,
-			'options' => [],
-			'aggregate_name_options' => [
-				'fb_likes' => ['label' => 'Facebook Likes'],
-				'fb_shares' => ['label' => 'Facebook Shares'],
-				'fb_comments' => ['label' => 'Facebook Comments'],
-				'fb_total' => ['label' => 'Facebook Overall'],
-				'twitter' => ['label' => 'Twitter'],
-				'linkedin' => ['label' => 'LinkedIn'],
-				'pinterest' => ['label' => 'Pinterest']
-			],
-			'stat_value_options' => [
-				'count' => ['label' => 'Count'],
-				'min' => ['label' => 'Min'],
-				'max' => ['label' => 'Max'],
-				'avg' => ['label' => 'Avg'],
-				'sum' => ['label' => 'Sum'],
-				'sum_of_squares' => ['label' => 'Sum of Squares'],
-				'variance' => ['label' => 'Variance'],
-				'std_dev' => ['label' => 'Standard Deviation']
-			]
-		],
-		'aggregate_by' => [
-			'type' => 'string',
-			'required' => true,
-			'options' => [
-				'publisher' => ['label' => ''],
-				'domains' => ['label' => ''],
-				'domain' => ['label' => ''],
-				'language' => ['label' => ''],
-				'authors' => ['label' => ''],
-				'country' => ['label' => ''],
-				'categories' => ['label' => 'Categories']
-			]
-		],
-		'video_only' => [
-			'type' => 'boolean'
-		],
-		'default_field' => [
-			'type' => 'string'
-		],
-		'size' => [
-			'type' => 'int'
-		]
-	];
-
-	/**
 	 * @var GuzzleClient
 	 */
 	static protected $_client;
@@ -220,7 +47,7 @@ class NewsWhip {
 		$this->setDebug(
 			empty($config['debug'])
 				? false
-				: (boolean) $config['debug']
+				: $config['debug']
 		);
 
 	}
@@ -307,7 +134,11 @@ class NewsWhip {
 			throw new \ErrorException($response->getReasonPhrase(), $response->getStatusCode());
 		}
 
-		return json_decode($response->getBody()->getContents(), true);
+		return json_decode(
+			$response->getBody()
+				->getContents(),
+			true
+		);
 
 	}
 
@@ -646,7 +477,7 @@ class NewsWhip {
 
 			if (is_string($filterField)) {
 
-				if (!array_key_exists($filterField, $this->_postFilterFields)) {
+				if (!array_key_exists($filterField, NewsWhipDefinitions::$postFilterFields)) {
 					throw new \Exception("Invalid filter field passed ({$filterField}).");
 				}
 
@@ -675,6 +506,35 @@ class NewsWhip {
 		}
 
 		return implode(' AND ', $searchStrings);
+
+	}
+
+	/**
+	 * getCategoryHierarchy
+	 *
+	 * @author  Christopher M. Black <cblack@devonium.com>
+	 *
+	 * @return array
+	 */
+	public static function getCategoryHierarchy() {
+
+		$categories = [];
+
+		foreach (NewsWhipDefinitions::$newsWhipCategoryHierarchy as $parentKey => $children) {
+			$categoryChildren = [];
+			if (!empty($children)) {
+				foreach ($children as $child) {
+					$categoryChildren[] = ['id' => $child, 'name' => NewsWhipDefinitions::$newsWhipCategories[$child]];
+				}
+			}
+			$categories[] = [
+				'id' => $parentKey,
+				'name' => NewsWhipDefinitions::$newsWhipCategories[$parentKey],
+				'children' => $categoryChildren
+			];
+		}
+
+		return $categories;
 
 	}
 
